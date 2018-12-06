@@ -16,8 +16,19 @@ namespace FastSpeedTest
             string downloadSpeedResult = "DOWNLOAD: 0 Mbps";
             string uploadSpeedResult = "UPLOAD: 0 Mbps";
             IWebDriver driver = null;
-            var jsonText = File.ReadAllText($"{System.Environment.CurrentDirectory}\\FastSpeedTestConfig.json");
-            Config config = JsonConvert.DeserializeObject<Config>(jsonText);
+            Config config = new Config();
+
+            try
+            {
+                var jsonText = File.ReadAllText($"{Environment.CurrentDirectory}\\FastSpeedTestConfig.json");
+                config = JsonConvert.DeserializeObject<Config>(jsonText);
+            }
+            catch(Exception ex)
+            {
+                File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
+                Environment.Exit(0);
+            }
+
 
             try
             {
@@ -96,7 +107,10 @@ namespace FastSpeedTest
 
             void Log(Exception exception)
             {
-                File.AppendAllText(config .LogLocation, $"{DateTime.Now + Environment.NewLine}: {exception.ToString()} {Environment.NewLine} {Environment.NewLine}");
+                if (File.Exists(config.LogLocation))
+                {
+                    File.AppendAllText(config.LogLocation, $"{DateTime.Now + Environment.NewLine}: {exception.ToString()} {Environment.NewLine} {Environment.NewLine}");
+                }       
             }
 
             void ExportResultsAsCSV(string download, string upload)
@@ -109,7 +123,11 @@ namespace FastSpeedTest
 
                 string resultsAsCSV = downloadCSVFormat + uploadCSVFormat;
 
-                File.WriteAllText(config.CSVLocation, resultsAsCSV);
+                if (File.Exists(config.CSVLocation))
+                {
+                    File.WriteAllText(config.CSVLocation, resultsAsCSV);
+                }
+                
             }
 
         }

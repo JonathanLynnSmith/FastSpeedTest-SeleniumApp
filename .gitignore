@@ -1,3 +1,4 @@
+db.lock
 packages/*
 fastspeedtest/obj/*
 fastspeedtest/bin/*
