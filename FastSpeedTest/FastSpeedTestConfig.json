@@ -1,0 +1,13 @@
+{
+  "url": "https://fast.com",
+  "logLocation": "c:\\boh\\log\\FastSpeedTest.log",
+  "timeout": "120",
+  "csvLocation": "c:\\boh\\data\\FastSpeedTestResults.csv",
+
+  "certificationAttributes": "a#overridelink",
+  "downloadSpeedAttributes": ".succeeded#speed-value",
+  "downloadUnitsAttributes": ".succeeded#speed-units",
+  "showMoreInfoAttributes": ".localized#show-more-details-link",
+  "uploadSpeedAttributes": ".succeeded#upload-value",
+  "uploadUnitsAttributes": ".succeeded#upload-units"
+}
