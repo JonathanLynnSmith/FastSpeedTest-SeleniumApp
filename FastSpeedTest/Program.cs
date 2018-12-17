@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
+using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
@@ -16,19 +16,7 @@ namespace FastSpeedTest
             string downloadSpeedResult = "DOWNLOAD: 0 Mbps";
             string uploadSpeedResult = "UPLOAD: 0 Mbps";
             IWebDriver driver = null;
-            Config config = new Config();
-
-            try
-            {
-                var jsonText = File.ReadAllText($"{Environment.CurrentDirectory}\\FastSpeedTestConfig.json");
-                config = JsonConvert.DeserializeObject<Config>(jsonText);
-            }
-            catch(Exception ex)
-            {
-                File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
-                Environment.Exit(0);
-            }
-
+            Config config = GetConfiguration();
 
             try
             {
@@ -50,9 +38,6 @@ namespace FastSpeedTest
                 driver = new InternetExplorerDriver(ieService, ieOptions);
                 driver.Manage().Window.Minimize();
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(config.TimeOut));
-
-                //Check for Certification Alert
-                CheckForCertAlert(driver);
 
                 //Download Test
                 var DownloadTestComplete = ExpectedConditions.ElementExists(By.CssSelector(config.DownloadSpeedAttributes));
@@ -97,20 +82,38 @@ namespace FastSpeedTest
             Console.WriteLine(downloadSpeedResult);
             Console.WriteLine(uploadSpeedResult);
 
-            void CheckForCertAlert(IWebDriver webDriver)
+            Config GetConfiguration()
             {
-                if (webDriver.FindElements(By.CssSelector(config.CertificationAttributes)).Count() > 0)
+                Config configuration = new Config();
+                try
                 {
-                    webDriver.FindElement(By.CssSelector(config.CertificationAttributes)).Click();
+                    var jsonText = File.ReadAllText($"{Environment.CurrentDirectory}\\FastSpeedTestConfig.json");
+                    configuration = JsonConvert.DeserializeObject<Config>(jsonText);
                 }
+                catch (FileNotFoundException ex)
+                {
+                    File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
+                    MessageBox.Show($"FastSpeedTestConfig.json Not Found. \n \n {ex.ToString()}", "FastSpeedTestConfig.json Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(0);
+                }
+                catch (Exception ex)
+                {
+                    File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
+                    MessageBox.Show(ex.ToString(),"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(0);
+                }
+
+                return configuration;
             }
 
             void Log(Exception exception)
             {
-                if (File.Exists(config.LogLocation))
+                if (!Directory.Exists(config.LogLocation))
                 {
-                    File.AppendAllText(config.LogLocation, $"{DateTime.Now + Environment.NewLine}: {exception.ToString()} {Environment.NewLine} {Environment.NewLine}");
-                }       
+                    Directory.CreateDirectory(config.LogLocation);
+                }
+                File.AppendAllText($"{config.LogLocation}{config.LogFileName}", $"{DateTime.Now + Environment.NewLine}: {exception.ToString()} {Environment.NewLine} {Environment.NewLine}");
+
             }
 
             void ExportResultsAsCSV(string download, string upload)
@@ -123,11 +126,11 @@ namespace FastSpeedTest
 
                 string resultsAsCSV = downloadCSVFormat + uploadCSVFormat;
 
-                if (File.Exists(config.CSVLocation))
+                if (!Directory.Exists(config.CSVLocation))
                 {
-                    File.WriteAllText(config.CSVLocation, resultsAsCSV);
+                    Directory.CreateDirectory(config.CSVLocation);
                 }
-                
+                File.WriteAllText($"{config.CSVLocation}{config.CSVFileName}", resultsAsCSV);
             }
 
         }

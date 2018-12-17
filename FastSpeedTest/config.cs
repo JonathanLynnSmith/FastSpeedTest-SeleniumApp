@@ -11,7 +11,9 @@ namespace FastSpeedTest
         public string URL { get; set; }
         public int TimeOut { get; set; }
         public string CSVLocation { get; set; }
+        public string CSVFileName { get; set; }
         public string LogLocation { get; set; }
+        public string LogFileName { get; set; }
         public string CertificationAttributes { get; set; }
         public string DownloadSpeedAttributes { get; set; }
         public string DownloadUnitsAttributes { get; set; }
