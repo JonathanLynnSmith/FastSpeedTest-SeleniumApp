@@ -87,18 +87,18 @@ namespace FastSpeedTest
                 Config configuration = new Config();
                 try
                 {
-                    var jsonText = File.ReadAllText($"{Environment.CurrentDirectory}\\FastSpeedTestConfig.json");
+                    var jsonText = File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}\\FastSpeedTestConfig.json");
                     configuration = JsonConvert.DeserializeObject<Config>(jsonText);
                 }
                 catch (FileNotFoundException ex)
                 {
-                    File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
+                    File.WriteAllText($"{AppDomain.CurrentDomain.BaseDirectory}\\FastSpeedTest.log", ex.ToString());
                     MessageBox.Show($"FastSpeedTestConfig.json Not Found. \n \n {ex.ToString()}", "FastSpeedTestConfig.json Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(0);
                 }
                 catch (Exception ex)
                 {
-                    File.WriteAllText($"{Environment.CurrentDirectory}\\FastSpeedTest.log", ex.ToString());
+                    File.WriteAllText($"{AppDomain.CurrentDomain.BaseDirectory}\\FastSpeedTest.log", ex.ToString());
                     MessageBox.Show(ex.ToString(),"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(0);
                 }
